@@ -1,21 +1,30 @@
 package calculator;
 
+import java.util.Arrays;
+
 /**
- * 1단계: 입력 문자열이 null, 빈 문자열("") 또는 공백만이면 0을 반환한다.
- * 앞으로의 단계에서는 구분자 처리와 유효성 검사를 이 클래스에 확장할 수 있다.
+ * 문자열 덧셈 계산기
+ * 단계 2: 기본 구분자 쉼표(,)와 콜론(:)로 숫자를 분리해 합산한다.
+ * - 빈/공백 입력이면 0 반환
+ * - "1,2" -> 3, "1,2,3" -> 6, "1,2:3" -> 6
+ * - 커스텀 구분자와 유효성 검사는 이후 단계에서 구현
  */
 public class StringCalculator {
 
-    /**
-     * 요구사항 1: 빈/공백 입력이면 0 반환.
-     * 현재 단계에서는 다른 입력에 대한 계산은 아직 미구현이므로 0만 반환한다.
-     */
     public int add(String input) {
         if (isBlank(input)) {
             return 0;
         }
-        // 1단계에서는 다른 케이스 미구현. 다음 단계에서 구분자/합산 로직 추가 예정.
-        return 0;
+
+        // 기본 구분자: 쉼표, 콜론
+        String[] tokens = input.split("[,:]");
+
+        // 공백 트림 후 빈 토큰은 제외, 양수만 합산
+        return Arrays.stream(tokens)
+                .map(String::trim)
+                .filter(token -> !token.isEmpty())
+                .mapToInt(Integer::parseInt)
+                .sum();
     }
 
     private boolean isBlank(String s) {
