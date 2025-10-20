@@ -22,10 +22,12 @@ public class StringCalculator {
 
         // 커스텀 구분자 헤더가 있는 경우 처리
         if (startsWithCustomHeader(input)) {
-            int newlineIdx = input.indexOf('\n');
-            validateCustomHeader(input, newlineIdx);           // 헤더 형식 검증
-            char customDelimiter = parseCustomDelimiter(input, newlineIdx); // 한 문자 구분자
-            String numbersPart = input.substring(newlineIdx + 1);
+            // Console.readLine()으로 읽은 입력은 \n이 문자열 리터럴로 들어오므로 실제 개행 문자로 변환
+            String processedInput = input.replace("\\n", "\n");
+            int newlineIdx = processedInput.indexOf('\n');
+            validateCustomHeader(processedInput, newlineIdx);           // 헤더 형식 검증
+            char customDelimiter = parseCustomDelimiter(processedInput, newlineIdx); // 한 문자 구분자
+            String numbersPart = processedInput.substring(newlineIdx + 1);
             return sumValidatedTokens(splitByCustomDelimiter(numbersPart, customDelimiter));
         }
 
