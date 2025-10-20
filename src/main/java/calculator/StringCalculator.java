@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class StringCalculator {
 
     public int add(String input) {
-        // 빈 문자열/공백만 입력이면 0 반환
+        // 빈 문자열/공백만 입력이면 0반환
         if (isBlank(input)) {
             return 0;
         }
