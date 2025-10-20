@@ -4,12 +4,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * 3단계: 커스텀 구분자 지원
+ * 4단계: 입력 유효성 검사
  */
 class StringCalculatorTest {
-
     private final StringCalculator calculator = new StringCalculator();
 
     @Test
@@ -36,9 +36,38 @@ class StringCalculatorTest {
     }
 
     @Test
-    @DisplayName("특수 문자(역슬래시, 하이픈)도 구분자로 처리한다")
-    void sumsWithSpecialCharCustomDelimiter() {
-        assertEquals(6, calculator.add("//-\n1-2-3"));
-        assertEquals(6, calculator.add("//\\\n1\\2\\3"));
+    @DisplayName("형식 오류: 커스텀 구분자 헤더에 줄바꿈이 없으면 예외")
+    void throwsWhenCustomHeaderMissingNewline() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("//;1;2;3"));
+    }
+
+    @Test
+    @DisplayName("형식 오류: 커스텀 구분자가 한 문자가 아니면 예외")
+    void throwsWhenCustomDelimiterNotSingleChar() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("//;;\n1;2;3"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("//\n1;2;3"));
+    }
+
+    @Test
+    @DisplayName("빈 토큰이 있으면 예외")
+    void throwsWhenEmptyTokenPresent() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1,,2"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("//;\n1;;2"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1,:2"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add(" , "));
+    }
+
+    @Test
+    @DisplayName("숫자가 아닌 값이 있으면 예외")
+    void throwsWhenNonNumericToken() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1,a"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("//;\n1;X;3"));
+    }
+
+    @Test
+    @DisplayName("음수가 포함되면 예외")
+    void throwsWhenNegativeNumberPresent() {
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1,-2"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("//;\n1;-2;3"));
     }
 }
